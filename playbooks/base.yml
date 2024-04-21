@@ -1,0 +1,237 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - git
+      tags: git
+
+    - name: git config user name
+      become_user: "{{ local.username }}"
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "{{ git.username }}"
+      tags: git
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - docker
+          - docker-compose
+          - python3-pip
+      tags: docker
+
+    - name: Ensure "docker" group exists
+      become: true
+      ansible.builtin.group:
+        name: docker
+        state: present
+      tags: docker
+
+    - name: Add user to docker group
+      become: true
+      ansible.builtin.user:
+        name: "{{ local.username }}"
+        groups: docker
+        append: true
+      tags: docker
+
+    - name: Stop and disable docker systemd service
+      become: true
+      ansible.builtin.systemd_service:
+        name: docker
+        enabled: false
+        state: stopped
+      tags: docker
+
+    - name: home tmp location
+      become: true
+      ansible.builtin.file:
+        path: "{{ local.home }}/tmp"
+        owner: "{{ local.username }}"
+        group: "{{ local.username }}"
+        mode: '0755'
+        state: directory
+
+    - name: i3wm Download (v4.23)
+      ansible.builtin.get_url:
+        url: "{{ i3wm.sur5r.signing_key }}"
+        dest: "{{ local.home }}/tmp/i3wm_keyring.deb"
+        checksum: "sha256:{{ i3wm.sur5r.sha256 }}"
+
+    - name: i3wm Install deb
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ local.home }}/tmp/i3wm_keyring.deb"
+
+    - name: i3wm Add apt repo
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] http://debian.sur5r.net/i3/ {{ ansible_distribution_release }} universe"
+        state: present
+        filename: sur5r-i3wm.list
+
+    - name: i3wm Install pkg
+      become: true
+      ansible.builtin.apt:
+        package: i3
+        update_cache: true
+
+    - name: i3wm tack tack version
+      ansible.builtin.shell: $(which i3) --version
+      register: i3wm_version_result
+
+    - name: i3wm stdout
+      ansible.builtin.debug:
+        msg: |
+          "{{ i3wm_version_result.stdout }}"
+      when: i3wm_version_result is defined
+      tags:
+        - i3wm
+        - messages
+
+    - name: i3blocks Git fetch (latest)
+      ansible.builtin.git:
+        repo: https://github.com/vivien/i3blocks.git
+        dest: "{{ local.home }}/.config/i3blocks"
+        depth: 1
+      tags:
+        - i3blocks
+
+    - name: i3blocks Install pkg dependencies
+      become: true
+      ansible.builtin.apt:
+        package:
+          - autoconf
+          - pkg-config
+      tags:
+        - i3blocks
+
+    - name: i3blocks Setup commands one
+      ansible.builtin.command: ./autogen.sh
+      args:
+        chdir: "{{ local.home }}/.config/i3blocks"
+      tags:
+        - i3blocks
+
+    - name: i3blocks Setup commands two
+      become: true
+      ansible.builtin.command: ./configure
+      args:
+        chdir: "{{ local.home }}/.config/i3blocks"
+      tags:
+        - i3blocks
+
+    - name: i3blocks Make install
+      become: true
+      community.general.make:
+        chdir: "{{ local.home }}/.config/i3blocks"
+        target: install
+      tags:
+        - i3blocks
+
+    - name: XDG dirs Desktop
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_DESKTOP_DIR.*'
+        line: "#XDG_DESKTOP_DIR=\"$HOME/Desktop\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Downloads
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_DOWNLOAD_DIR.*'
+        line: "XDG_DOWNLOAD_DIR=\"$HOME/downloads\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Templates
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_TEMPLATES_DIR.*'
+        line: "#XDG_TEMPLATES_DIR=\"$HOME/Templates\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Public
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_PUBLICSHARE_DIR.*'
+        line: "#XDG_PUBLICSHARE_DIR=\"$HOME/Public\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Documents
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_DOCUMENTS_DIR.*'
+        line: "XDG_DOCUMENTS_DIR=\"$HOME/documents\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Music
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_MUSIC_DIR.*'
+        line: "#XDG_MUSIC_DIR=\"$HOME/Music\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Pictures
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_PICTURES_DIR.*'
+        line: "XDG_PICTURES_DIR=\"$HOME/pictures\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs Videos
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_VIDEOS_DIR.*'
+        line: "XDG_VIDEOS_DIR=\"$HOME/videos\""
+        path: "{{ local.home }}/.config/user-dirs.dirs"
+
+    - name: XDG dirs rmdir
+      ansible.builtin.file:
+        path: "{{ local.home }}/{{ item }}"
+        state: absent
+      loop:
+        - Desktop
+        - Documents
+        - Downloads
+        - Music
+        - Pictures
+        - Public
+        - Templates
+        - Videos
+
+    - name: neovim Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/neovim/neovim.git
+        dest: "{{ local.home }}/tmp/neovim"
+        depth: 1
+        version: stable
+
+    - name: neovim Install package deps
+      become: true
+      ansible.builtin.apt:
+        package:
+          - cmake
+          - gettext
+          - ninja-build
+        state: present
+        update_cache: true
+
+    - name: neovim Make install
+      become: true
+      community.general.make:
+        chdir: "{{ local.home }}/tmp/neovim"
+        target: install
+        params:
+          CMAKE_BUILD_TYPE: RelWithDebInfo
+
+    - name: common Install packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - fzf
+          - jq
+          - xclip
+          - curl
+

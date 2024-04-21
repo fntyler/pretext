@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: oh my bash Download
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh
+        dest: "{{ local.home }}/tmp/install_omb.sh"
+        mode: '0755'
+
+    - name: oh my bash Check if installed
+      ansible.builtin.file:
+        path: "{{ local.home }}/.oh-my-bash"
+        state: directory
+      register: omb_installed
+
+    - name: oh my bash Install
+      ansible.builtin.command: bash -c "{{ local.home }}/tmp/install_omb.sh"
+      register: install_omb_result
+      when: omb_installed == false
+
+    - name: oh my bash Set theme
+      ansible.builtin.lineinfile:
+        path: "{{ local.home }}/.bashrc"
+        regexp: '^OSH_THEME=.*'
+        line: "OSH_THEME={{ omb.theme }}"
+

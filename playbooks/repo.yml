@@ -1,0 +1,129 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: i3wm Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/fntyler/dot-i3.git
+        dest: "{{ local.home }}/.config/dot-i3"
+        depth: 1
+
+    - name: i3wm Default file stats
+      ansible.builtin.stat:
+        path: "{{ local.home }}/.config/i3"
+      register: _i3dir
+
+    - name: i3wm Block
+      block:
+        - name: message
+          ansible.builtin.debug:
+            msg: |
+              i3 dir is not symlink
+
+        - name: i3wm Make copy of default i3 directory
+          ansible.builtin.copy:
+            src: "{{ local.home }}/.config/i3/"
+            dest: "{{ local.home }}/.config/i3.default.bak/"
+
+        - name: i3wm Delete original i3 directory
+          ansible.builtin.file:
+            path: "{{ local.home }}/.config/i3"
+            state: absent
+      when: _i3dir is defined and _i3dir.stat.islnk == False
+
+    - name: i3wm Symlink dot-i3 to i3
+      become_user: "{{ local.username }}"
+      ansible.builtin.file:
+          src: "{{ local.home }}/.config/dot-i3"
+          dest: "{{ local.home }}/.config/i3"
+          state: link
+
+    - name: nvim Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/fntyler/dot-nvim.git
+        dest: "{{ local.home }}/.config/dot-nvim"
+        depth: 1
+
+    - name: nvim Symlink dot-nvim to neovim
+      become_user: "{{ local.username }}"
+      ansible.builtin.file:
+        src: "{{ local.home }}/.config/dot-nvim"
+        dest: "{{ local.home }}/.config/nvim"
+        state: link
+
+    - name: nvim Create dirs
+      ansible.builtin.file:
+        path: "{{ local.home }}/.config/dot-nvim/{{ item }}"
+        state: directory
+        mode: '0764'
+      loop:
+        - lua
+        - pack
+        - plugged
+
+    - name: nvim Create vim-plug dirs
+      ansible.builtin.file:
+        path: "{{ local.home }}/.local/share/nvim/site/autoload/"
+        state: directory
+        mode: '0750'
+
+    - name: nvim Download vim-plug
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+        dest: "{{ local.home }}/.local/share/nvim/site/autoload/plug.vim"
+
+    - name: nvim Download vim-plug
+      ansible.builtin.command: nvim -c "PlugInstall" -c ":qa!"
+      register: _vim_plug
+
+    - name: tmux Install packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - tmux
+        state: present
+        update_cache: true
+
+    - name: tmux Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/fntyler/dot-tmux.git
+        dest: "{{ local.home }}/.config/dot-tmux"
+        depth: 1
+
+    - name: tmux Symlink dot-tmux to tmux
+      become_user: "{{ local.username }}"
+      ansible.builtin.file:
+        src: "{{ local.home }}/.config/dot-tmux"
+        dest: "{{ local.home }}/.config/tmux"
+        state: link
+
+    - name: tmux Symlink dot-tmux/tmux.conf to .tmux.conf
+      become_user: "{{ local.username }}"
+      ansible.builtin.file:
+        src: "{{ local.home }}/.config/dot-tmux/tmux.conf"
+        dest: "{{ local.home }}/.tmux.conf"
+        state: link
+
+    - name: tmux Git fetch tpm
+      ansible.builtin.git:
+        repo: https://github.com/tmux-plugins/tpm
+        dest: "{{ local.home }}/.config/dot-tmux/plugins/tpm"
+        depth: 1
+
+    - name: tmux Create session
+      ansible.builtin.command: tmux new-session -d -s ansibleSession
+      register: _tmux_session
+
+    - name: tmux Install plugins
+      ansible.builtin.command: tmux send-keys -t ansibleSession.0 send-prefix I
+      register: _tmux_tpm
+
+    - name: tmux Kill session
+      ansible.builtin.command: tmux kill-session -t ansibleSession
+      register: _tmux_session
+

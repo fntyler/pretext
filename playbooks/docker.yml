@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - docker
+          - docker-compose
+          - python3-pip
+
+    - name: Ensure "docker" group exists
+      become: true
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: Add user to docker group
+      become: true
+      ansible.builtin.user:
+        name: "{{ local.username }}"
+        groups: docker
+        append: true
+
+

@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  tasks:
+
+    - name: Install packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - git
+
+    - name: git config user name
+      become_user: "{{ local.username }}"
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: "{{ git.username }}"
