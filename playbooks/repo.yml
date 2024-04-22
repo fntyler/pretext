@@ -1,8 +1,9 @@
 ---
 - hosts: localhost
+  name: repos
   tasks:
 
-    - name: Include vars
+    - name: base Include vars
       ansible.builtin.include_vars:
         file: vars/base.yml
       tags: always
@@ -18,7 +19,7 @@
         path: "{{ local.home }}/.config/i3"
       register: _i3dir
 
-    - name: i3wm Block
+    - name: i3wm logical block
       block:
         - name: message
           ansible.builtin.debug:
@@ -126,4 +127,3 @@
     - name: tmux Kill session
       ansible.builtin.command: tmux kill-session -t ansibleSession
       register: _tmux_session
-

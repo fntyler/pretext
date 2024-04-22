@@ -1,27 +1,28 @@
 ---
 - hosts: localhost
+  name: browser
   tasks:
 
-    - name: Include vars
+    - name: base Include vars
       ansible.builtin.include_vars:
         file: vars/base.yml
       tags: always
 
-    - name: firefox two
+    - name: browser Firefox signing-key
       become: true
       ansible.builtin.get_url:
         url: https://packages.mozilla.org/apt/repo-signing-key.gpg
         dest: /etc/apt/keyrings/packages.mozilla.org.asc
         checksum: sha256:3ce6a27fe0538464191eebb9ff1a0b8a269af16d872524822b25198328263e84
 
-    - name: firefox two
+    - name: browser Firefox repo
       become: true
       ansible.builtin.apt_repository:
         repo: "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main"
         filename: mozilla.list
         state: present
 
-    - name: firefox Remove firefox snap
+    - name: browser Remove firefox snap
       become: true
       community.general.snap:
         name: firefox
@@ -29,21 +30,21 @@
       register: _remove_firefox_snap_result
       failed_when: '"Failed to find required executable" not in _remove_firefox_snap_result.msg'
 
-    - name: firefox Disable and stop snapd
+    - name: browser Disable and stop snapd
       become: true
       ansible.builtin.systemd_service:
         name: snapd
         enabled: false
         state: stopped
 
-    - name: firefox Remove snapd
+    - name: browser Firefox Remove snapd
       become: true
       ansible.builtin.apt:
         package:
           - snapd
         state: absent
 
-    - name: firefox Remove snapd
+    - name: browser Change apt preferences
       become: true
       ansible.builtin.blockinfile:
         path: /etc/apt/preferences.d/mozilla
@@ -54,7 +55,7 @@
           Pin: origin packages.mozilla.org
           Pin-Priority: 1000
 
-    - name: firefox Install package but as deb
+    - name: browser Install package but as deb
       become: true
       ansible.builtin.apt:
         package:
@@ -62,7 +63,7 @@
         state: present
         update_cache: true
 
-    - name: firefox Remove dir
+    - name: browser Remove dir
       ansible.builtin.file:
         path: "{{ local.home }}/snap"
         state: absent
