@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  name: neovim
+  tasks:
+
+    - name: neovim Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/neovim/neovim.git
+        dest: "{{ local.home }}/tmp/neovim"
+        depth: 1
+        version: stable
+
+    - name: neovim Install package deps
+      become: true
+      ansible.builtin.apt:
+        package:
+          - cmake
+          - gettext
+          - ninja-build
+        state: present
+        update_cache: true
+
+    - name: neovim Make install
+      become: true
+      community.general.make:
+        chdir: "{{ local.home }}/tmp/neovim"
+        target: install
+        params:
+          CMAKE_BUILD_TYPE: RelWithDebInfo
+
