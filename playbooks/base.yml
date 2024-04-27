@@ -58,68 +58,6 @@
         mode: '0755'
         state: directory
 
-    - name: base XDG dirs Desktop
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_DESKTOP_DIR.*'
-        line: "#XDG_DESKTOP_DIR=\"$HOME/Desktop\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Downloads
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_DOWNLOAD_DIR.*'
-        line: "XDG_DOWNLOAD_DIR=\"$HOME/downloads\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Templates
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_TEMPLATES_DIR.*'
-        line: "#XDG_TEMPLATES_DIR=\"$HOME/Templates\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Public
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_PUBLICSHARE_DIR.*'
-        line: "#XDG_PUBLICSHARE_DIR=\"$HOME/Public\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Documents
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_DOCUMENTS_DIR.*'
-        line: "XDG_DOCUMENTS_DIR=\"$HOME/documents\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Music
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_MUSIC_DIR.*'
-        line: "#XDG_MUSIC_DIR=\"$HOME/Music\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Pictures
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_PICTURES_DIR.*'
-        line: "XDG_PICTURES_DIR=\"$HOME/pictures\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs Videos
-      ansible.builtin.lineinfile:
-        regexp: '^XDG_VIDEOS_DIR.*'
-        line: "XDG_VIDEOS_DIR=\"$HOME/videos\""
-        path: "{{ local.home }}/.config/user-dirs.dirs"
-
-    - name: base XDG dirs rmdir
-      ansible.builtin.file:
-        path: "{{ local.home }}/{{ item }}"
-        state: absent
-      loop:
-        - Desktop
-        - Documents
-        - Downloads
-        - Music
-        - Pictures
-        - Public
-        - Templates
-        - Videos
-
     - name: base Install common packages
       become: true
       ansible.builtin.apt:
@@ -128,3 +66,12 @@
           - jq
           - xclip
           - curl
+
+    - name: base Create dev dir
+      become: true
+      ansible.builtin.file:
+        path: "{{ local.home }}/dev"
+        owner: "{{ local.username }}"
+        group: "{{ local.username }}"
+        mode: '0775'
+        state: directory
