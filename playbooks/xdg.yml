@@ -1,0 +1,83 @@
+---
+- hosts: localhost
+  name: xdg
+  tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: xdg dirs Templates
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_TEMPLATES_DIR.*'
+        line: "#XDG_TEMPLATES_DIR=\"$HOME/Templates\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Music
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_MUSIC_DIR.*'
+        line: "#XDG_MUSIC_DIR=\"$HOME/Music\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Public
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_PUBLICSHARE_DIR.*'
+        line: "#XDG_PUBLICSHARE_DIR=\"$HOME/Public\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Desktop
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_DESKTOP_DIR.*'
+        line: "#XDG_DESKTOP_DIR=\"$HOME/Desktop\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Documents
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_DOCUMENTS_DIR.*'
+        line: "XDG_DOCUMENTS_DIR=\"{{ xdg.documents.path }}\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Pictures
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_PICTURES_DIR.*'
+        line: "XDG_PICTURES_DIR=\"{{ xdg.pictures.path }}\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Videos
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_VIDEOS_DIR.*'
+        line: "XDG_VIDEOS_DIR=\"{{ xdg.videos.path }}\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs Download
+      ansible.builtin.lineinfile:
+        regexp: '^XDG_DOWNLOAD_DIR.*'
+        line: "XDG_DOWNLOAD_DIR=\"{{ xdg.download.path }}\""
+        path: "{{ xdg.file }}"
+
+    - name: xdg dirs rmdir
+      ansible.builtin.file:
+        path: "{{ local.home }}/{{ item }}"
+        state: absent
+      loop:
+        - Desktop
+        - Documents
+        - Downloads
+        - Music
+        - Pictures
+        - Public
+        - Templates
+        - Videos
+
+        #- name: xdg Set download dir
+        #  ansible.builtin.command: xdg-user-dirs-update --set "{{ xdg.download.name }}" "{{ xdg.download.path }}"
+
+        #- name: xdg Set download dir
+        #  ansible.builtin.command: xdg-user-dirs-update --set "{{ xdg.documents.name }}" "{{ xdg.documents.path }}"
+
+        #- name: xdg Set pictures dir
+        #  ansible.builtin.command: xdg-user-dirs-update --set "{{ xdg.pictures.name }}" "{{ xdg.pictures.path }}"
+
+        #- name: xdg Set videos dir
+        #  ansible.builtin.command: xdg-user-dirs-update --set "{{ xdg.videos.name }}" "{{ xdg.videos.path }}"
