@@ -10,6 +10,8 @@ i3wm:
     sha256: "f9bb4340b5ce0ded29b7e014ee9ce788006e9bbfe31e96c09b2118ab91fca734"
 omb:
   theme: rr
+  download:
+    url: "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh"
 xdg:
   file: "$HOME/.config/user-dirs.dirs"
   download:
