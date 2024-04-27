@@ -3,9 +3,13 @@
   name: ohmybash
   tasks:
 
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+
     - name: ohmybash Download
       ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh
+        url: "{{ omb.download.url }}"
         dest: "{{ local.home }}/tmp/install_omb.sh"
         mode: '0755'
 
