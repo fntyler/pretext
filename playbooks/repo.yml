@@ -127,3 +127,14 @@
     - name: tmux Kill session
       ansible.builtin.command: tmux kill-session -t ansibleSession
       register: _tmux_session
+
+    - name: gitconfig loop
+      community.general.git_config:
+        name: remote.origin.url
+        scope: local
+        value: "git@github.com:fntyler/{{ item }}.git"
+        repo: "~/.config/{{ item }}"
+      loop:
+        - dot-i3
+        - dot-nvim
+        - dot-tmux
