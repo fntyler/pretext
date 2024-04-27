@@ -10,3 +10,17 @@ i3wm:
     sha256: "f9bb4340b5ce0ded29b7e014ee9ce788006e9bbfe31e96c09b2118ab91fca734"
 omb:
   theme: rr
+xdg:
+  file: "$HOME/.config/user-dirs.dirs"
+  download:
+    name: "DOWNLOAD"
+    path: "$HOME/downloads"
+  documents:
+    name: "DOCUMENTS"
+    path: "$HOME/documents"
+  pictures:
+    name: "PICTURES"
+    path: "$HOME/pictures"
+  videos:
+    name: "VIDEOS"
+    path: "$HOME/videos"
