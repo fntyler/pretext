@@ -1,7 +1,12 @@
 ---
 - hosts: localhost
-  name: i3wm+i3blocks
+  name: i3wm-i3blocks
   tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
 
     - name: i3wm Download (v4.23)
       ansible.builtin.get_url:
@@ -30,7 +35,7 @@
       ansible.builtin.shell: $(which i3) --version
       register: i3wm_version_result
 
-    - name: i3wm stdout
+    - name: i3wm Print version
       ansible.builtin.debug:
         msg: |
           "{{ i3wm_version_result.stdout }}"
@@ -48,6 +53,8 @@
         package:
           - autoconf
           - pkg-config
+          - acpi
+          - sysstat
 
     - name: i3blocks Setup autogen.sh
       ansible.builtin.command: ./autogen.sh
@@ -65,3 +72,9 @@
       community.general.make:
         chdir: "{{ local.home }}/.config/i3blocks"
         target: install
+
+    - name: i3blocks Git fetch scripts
+      ansible.builtin.git:
+        repo: https://github.com/vivien/i3blocks-contrib.git
+        dest: "{{ local.home }}/.config/i3blocks/blocklets"
+        depth: 1
