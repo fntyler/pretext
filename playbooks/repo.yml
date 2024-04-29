@@ -103,7 +103,7 @@
         dest: "{{ local.home }}/.config/tmux"
         state: link
 
-    - name: tmux Symlink dot-tmux/tmux.conf to .tmux.conf
+    - name: tmux Symlink tmux.conf to .tmux.conf
       become_user: "{{ local.username }}"
       ansible.builtin.file:
         src: "{{ local.home }}/.config/dot-tmux/tmux.conf"
