@@ -13,6 +13,10 @@ omb:
   theme: font
   download:
     url: "https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh"
+  custom:
+    aliases:
+      dir: "$HOME/.oh-my-bash/custom/aliases"
+      path: "$HOME/.oh-my-bash/custom/aliases/fnt.aliases.sh"
 xdg:
   file: "$HOME/.config/user-dirs.dirs"
   download:
