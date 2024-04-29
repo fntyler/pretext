@@ -4,6 +4,7 @@ local:
   home: "{{ lookup('ansible.builtin.env', 'HOME') }}"
 git:
   username: fntyler
+  email: "71953103+fntyler@users.noreply.github.com"
 i3wm:
   sur5r:
     signing_key: "https://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2024.03.04_all.deb"
