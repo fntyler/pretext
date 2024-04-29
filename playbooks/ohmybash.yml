@@ -29,3 +29,12 @@
         path: "{{ local.home }}/.bashrc"
         regexp: '^OSH_THEME=.*'
         line: "OSH_THEME={{ omb.theme }}"
+
+    - name: ohmybash Custom aliases file
+      ansible.builtin.lineinfile:
+        path: "{{ omb.custom.aliases.path }}"
+        regexp: '^alias vim=.*'
+        line: "alias vim='nvim'"
+        owner: "{{ local.username }}"
+        group: "{{ local.username }}"
+        mode: '0644'
