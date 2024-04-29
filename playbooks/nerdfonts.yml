@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  name: nerdfonts
+  tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: nerdfonts Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/ryanoasis/nerd-fonts.git
+        dest: "{{ local.home }}/tmp/nerd-fonts"
+        depth: 1
+
+    - name: nerdfonts Install script
+      ansible.builtin.command: ./install.sh
+      args:
+        chdir: "{{ local.home }}/tmp/nerd-fonts"
