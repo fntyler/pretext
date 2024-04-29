@@ -128,6 +128,12 @@
       ansible.builtin.command: tmux kill-session -t ansibleSession
       register: _tmux_session
 
+    - name: milwaukee Git fetch
+      ansible.builtin.git:
+        repo: https://github.com/fntyler/milwaukee.git
+        dest: "{{ local.home }}/.config/milwaukee"
+        depth: 1
+
     - name: gitconfig loop
       community.general.git_config:
         name: remote.origin.url
@@ -138,3 +144,4 @@
         - dot-i3
         - dot-nvim
         - dot-tmux
+        - milwaukee
