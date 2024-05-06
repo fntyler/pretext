@@ -28,7 +28,7 @@
         name: firefox
         state: absent
       register: _remove_firefox_snap_result
-      failed_when: '"Failed to find required executable" not in _remove_firefox_snap_result.msg'
+      failed_when: "'Failed to find required executable' not in _remove_firefox_snap_result.msg"
 
     - name: browser Disable and stop snapd
       become: true
@@ -44,7 +44,7 @@
           - snapd
         state: absent
 
-    - name: browser Change apt preferences
+    - name: browser Add apt preference for firefox
       become: true
       ansible.builtin.blockinfile:
         path: /etc/apt/preferences.d/mozilla
@@ -54,6 +54,17 @@
           Package: *
           Pin: origin packages.mozilla.org
           Pin-Priority: 1000
+
+    - name: browser Add apt preference for snapd
+      become: true
+      ansible.builtin.blockinfile:
+        path: /etc/apt/preferences.d/snapd-no-mo
+        create: true
+        mode: '0644'
+        block: |
+          Package: snapd
+          Pin: release a=*
+          Pin-Priority: -1
 
     - name: browser Install package but as deb
       become: true
