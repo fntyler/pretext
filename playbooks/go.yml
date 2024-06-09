@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  name: go
+  tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: go Download (v1.22.4)
+      ansible.builtin.get_url:
+        url: "{{ go.download.url }}"
+        dest: "{{ local.home }}/tmp/go1.22.4.linux-amd64.tar.gz"
+        checksum: "sha256:{{ go.download.sha256 }}"
+
+    - name: go Purge existing install
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/go
+        state: absent
+
+    - name: go Extract archive
+      become: true
+      ansible.builtin.unarchive:
+        src: "{{ local.home }}/tmp/go1.22.4.linux-amd64.tar.gz"
+        dest: /usr/local
+
+    - name: go Add to system-wide path
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/profile.d/go.sh
+        content: "PATH=$PATH:/usr/local/go/bin"
+
+    - name: go Tack tack version
+      ansible.builtin.shell: /usr/local/go/bin/go version
+      register: go_version_result
+
+    - name: go Print version
+      ansible.builtin.debug:
+        msg: |
+          "{{ go_version_result.stdout }}"
+      when: go_version_result is defined
