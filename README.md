@@ -27,3 +27,7 @@ flowchart TD
     A[base.yml] --> D[neovim.yml]
     A[base.yml] --> E[repo.yml]
 ```
+
+## todo
+
+include package for calculator: `galculator`
