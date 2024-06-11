@@ -66,6 +66,7 @@
           - jq
           - xclip
           - curl
+          - blueman
 
     - name: base Create dev dir
       become: true
