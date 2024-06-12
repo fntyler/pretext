@@ -35,3 +35,8 @@ go:
   download:
     url: "https://go.dev/dl/go1.22.4.linux-amd64.tar.gz"
     sha256: "ba79d4526102575196273416239cca418a651e049c2b099f3159db85e7bade7d"
+
+elixir:
+  package_manager:
+    repo: "https://github.com/asdf-vm/asdf.git"
+    version: "v0.14.0"
