@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  name: elixir
+  tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: elixir Download package manager
+      ansible.builtin.git:
+        repo: "{{ elixir.package_manager.repo }}"
+        dest: "{{ local.home }}/.asdf"
+        single_branch: yes
+        version: "{{ elixir.package_manager.version }}"
+
+    - name: erlang Install dependencies
+      become: true
+      ansible.builtin.apt:
+        package:
+          - libssl-dev
+          - libncurses5-dev
