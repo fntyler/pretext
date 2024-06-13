@@ -67,6 +67,7 @@
           - xclip
           - curl
           - blueman
+          - atril
 
     - name: base Create dev dir
       become: true
