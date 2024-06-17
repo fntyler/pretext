@@ -68,6 +68,7 @@
           - curl
           - blueman
           - atril
+          - wireguard
 
     - name: base Create dev dir
       become: true
