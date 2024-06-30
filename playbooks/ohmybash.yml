@@ -30,12 +30,13 @@
         regexp: '^OSH_THEME=.*'
         line: "OSH_THEME={{ omb.theme }}"
 
-    - name: ohmybash Set EDITOR
+    - name: ohmybash Set aliases
       ansible.builtin.blockinfile:
         path: "{{ omb.custom.aliases.path }}"
         block: |
-          export EDITOR=nvim
-          alias vim=nvim
+          export EDITOR='nvim'
+          alias vim='nvim'
+          alias gitlog='git log --oneline --graph --decorate'
         owner: "{{ local.username }}"
         group: "{{ local.username }}"
         mode: '0644'
