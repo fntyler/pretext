@@ -3,6 +3,10 @@
   name: neovim
   tasks:
 
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+
     - name: neovim Git fetch
       ansible.builtin.git:
         repo: https://github.com/neovim/neovim.git
