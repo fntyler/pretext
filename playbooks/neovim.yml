@@ -24,6 +24,17 @@
         state: present
         update_cache: true
 
+    - name: neovim telescope.nvim Install dependencies
+      ansible.builtin.get_url:
+        url: "{{ ripgrep.download.url }}"
+        dest: "{{ local.home }}/tmp/{{ ripgrep.download.release }}"
+        checksum: "sha256:{{ ripgrep.download.sha256 }}"
+
+    - name: neovim telescope.nvim Install deb pkg
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ local.home }}/tmp/{{ ripgrep.download.release }}"
+
     - name: neovim Make install
       become: true
       community.general.make:

@@ -2,9 +2,11 @@
 local:
   username: "{{ lookup('ansible.builtin.env', 'USER') }}"
   home: "{{ lookup('ansible.builtin.env', 'HOME') }}"
+
 git:
   username: fntyler
   email: "71953103+fntyler@users.noreply.github.com"
+
 i3wm:
   sur5r:
     signing_key: "https://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2024.03.04_all.deb"
@@ -17,6 +19,7 @@ omb:
     aliases:
       dir: "$HOME/.oh-my-bash/custom/aliases"
       path: "$HOME/.oh-my-bash/custom/aliases/fnt.aliases.sh"
+
 xdg:
   file: "$HOME/.config/user-dirs.dirs"
   download:
@@ -31,6 +34,7 @@ xdg:
   videos:
     name: "VIDEOS"
     path: "$HOME/videos"
+
 go:
   download:
     url: "https://go.dev/dl/go1.22.4.linux-amd64.tar.gz"
@@ -40,3 +44,9 @@ elixir:
   package_manager:
     repo: "https://github.com/asdf-vm/asdf.git"
     version: "v0.14.0"
+
+ripgrep:
+  download:
+    url: "https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep_14.1.0-1_amd64.deb"
+    release: "ripgrep_14.1.0-1_amd64.deb"
+    sha256: "78953d5a1c97cb363de0098ff73a7ef33fcae014abd4d62f0da490fe3f58ee94"
