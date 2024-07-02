@@ -30,4 +30,4 @@ flowchart TD
 
 ## todo
 
-include package for calculator: `galculator`
+include package for calculator: `galculator` or other...
