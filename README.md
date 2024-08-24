@@ -18,6 +18,7 @@ $ ansible-playbooks playbooks/xdg.yml
 $ ansible-playbooks playbooks/browser.yml
 $ ansible-playbooks playbooks/neovim.yml
 $ ansible-playbooks playbooks/repo.yml
+# any other playbooks
 ```
 
 ```mermaid
@@ -27,7 +28,3 @@ flowchart TD
     A[base.yml] --> D[neovim.yml]
     A[base.yml] --> E[repo.yml]
 ```
-
-## todo
-
-include package for calculator: `galculator` or other...
