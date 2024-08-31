@@ -1,0 +1,58 @@
+---
+- hosts: localhost
+  name: rofi
+  tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+
+    - name: rofi Download release
+      ansible.builtin.get_url:
+        url: "{{ rofi.download.url }}"
+        dest: "{{ local.home }}/tmp/{{ rofi.download.release }}"
+        checksum: "sha256:{{ rofi.download.sha256 }}"
+
+
+    - name: rofi Install package deps
+      become: true
+      ansible.builtin.apt:
+        package:
+          - autoconf
+          - automake
+          - flex
+          - ninja-build
+          - bison
+          - libxkbcommon-x11-dev
+          - libglib2.0-dev
+          - libgtk2.0-dev
+          - pkg-config
+        state: present
+        update_cache: true
+
+    - name: rofi Extract archive
+      ansible.builtin.unarchive:
+        src: "{{ local.home }}/tmp/{{ rofi.download.release }}"
+        dest: "{{ local.home }}/tmp"
+
+    - name: rofi Create build dir
+      ansible.builtin.file:
+        path: "{{ local.home }}/tmp/rofi-1.7.5/build"
+        state: directory
+        mode: '0755'
+        
+    - name: rofi Configure
+      ansible.builtin.command: ../configure
+      args:
+        chdir: "{{ local.home }}/tmp/rofi-1.7.5/build"
+
+    - name: rofi Make
+      ansible.builtin.command: make
+      args:
+        chdir: "{{ local.home }}/tmp/rofi-1.7.5/build"
+        
+    - name: rofi Make install
+      become: true
+      community.general.make:
+        chdir: "{{ local.home }}/tmp/rofi-1.7.5/build"
+        target: install
