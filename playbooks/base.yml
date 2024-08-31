@@ -69,6 +69,7 @@
           - blueman
           - atril
           - wireguard
+          - rofi
 
     - name: base Create dev dir
       become: true
