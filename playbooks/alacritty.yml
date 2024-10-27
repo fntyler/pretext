@@ -1,0 +1,60 @@
+---
+- hosts: localhost
+  name: alacritty
+  tasks:
+
+    - name: base Include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    - name: alacritty Git clone
+      ansible.builtin.git:
+        repo: "https://github.com/alacritty/alacritty.git"
+        dest: "{{ local.home }}/tmp/alacritty"
+        depth: 1
+
+    # cd "{{ local.home }}/tmp/alacritty"
+    
+    # install rustup.rs
+    # Run the following in your terminal, then follow the onscreen instructions.
+    #
+    # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    #
+    # . "$HOME/.cargo/env"
+    #
+    # rustup override set stable
+    #
+    # rustup update stable
+
+    - name: alacritty Install package deps
+      become: true
+      ansible.builtin.apt:
+        package:
+          - cmake
+          - g++
+          - pkg-config
+          - libfreetype6-dev
+          - libfontconfig1-dev
+          - libxcb-xfixes0-dev
+          - libxkbcommon-dev
+          - python3
+        state: present
+        update_cache: true
+
+    # cd ~/tmp/alacritty
+    # cargo build --release
+
+    - name: alacritty Symlink alacritty to local
+      become: true
+      ansible.builtin.file:
+        src: "{{ local.home }}/tmp/alacritty/target/release/alacritty"
+        dest: /usr/local/bin/alacritty
+        state: link
+
+    - name: alacritty Add completion system-wide
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/profile.d/alacritty-completion.bash
+        content: "source {{ local.home }}/tmp/alacritty/extra/completions/alacritty.bash"
+
