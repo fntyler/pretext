@@ -58,3 +58,7 @@
         dest: /etc/profile.d/alacritty-completion.bash
         content: "source {{ local.home }}/tmp/alacritty/extra/completions/alacritty.bash"
 
+    - name: alacritty Create directory
+      ansible.builtin.file:
+        path: "{{ local.home }}/.config/alacritty"
+        state: directory
