@@ -90,6 +90,22 @@
         state: present
         update_cache: true
 
+    - name: tmux Install Extra packages
+      become: true
+      ansible.builtin.apt:
+        package:
+          - bash
+          - bc
+          - coreutils
+          - gawk
+          - git
+          - jq
+          - playerctl
+        state: present
+        update_cache: true
+      tags:
+        - extra
+
     - name: tmux Git fetch
       ansible.builtin.git:
         repo: https://github.com/fntyler/dot-tmux.git
@@ -134,7 +150,7 @@
         dest: "{{ local.home }}/.config/milwaukee"
         depth: 1
 
-    - name: gitconfig loop
+    - name: gitconfig Loop
       community.general.git_config:
         name: remote.origin.url
         scope: local
