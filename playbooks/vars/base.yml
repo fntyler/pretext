@@ -63,3 +63,9 @@ zig:
     url: "https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz"
     release: "zig-linux-x86_64-0.13.0.tar.xz"
     sha256: "d45312e61ebcc48032b77bc4cf7fd6915c11fa16e4aad116b66c9468211230ea"
+
+ghostty:
+  clone:
+    url: "https://github.com/ghostty-org/ghostty"
+  install:
+    dir: "{{ lookup('ansible.builtin.env', 'HOME') }}/.local"

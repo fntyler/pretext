@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  name: Ghostty
+  tasks:
+
+    - name: Base include vars
+      ansible.builtin.include_vars:
+        file: vars/base.yml
+      tags: always
+
+    # include playbooks/zig.yml
+
+    - name: Ghostty install package dependencies
+      become: true
+      ansible.builtin.apt:
+        package:
+          - pkg-config
+          - libgtk-4-dev
+          - libadwaita-1-dev
+          - git
+          - gcc-multilib
+        state: present
+        update_cache: true
+
+    - name: Ghostty git clone
+      ansible.builtin.git:
+        repo: "{{ ghostty.clone.url }}"
+        dest: "{{ local.home }}/tmp/ghostty"
+        depth: 1
+
+    - name: Ghostty build with zig
+      ansible.builtin.shell: >-
+        zig build
+        -p {{ ghostty.install.dir }}
+        -Doptimize=ReleaseFast
+      args:
+        chdir: "{{ local.home }}/tmp/ghostty"
+        executable: /bin/bash
