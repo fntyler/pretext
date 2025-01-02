@@ -25,7 +25,7 @@
       become: true
       ansible.builtin.copy:
         dest: /etc/profile.d/zig.sh
-        content: "PATH=$PATH:{{ zig_extraction.dest }}zig-linux-x86_64-{{ zig.release }}/zig"
+        content: "PATH=$PATH:{{ zig_extraction.dest }}zig-linux-x86_64-{{ zig.release }}"
 
     - name: Zig collect version
       ansible.builtin.shell: "{{ zig_extraction.dest }}zig-linux-x86_64-{{ zig.release }}/zig version"
