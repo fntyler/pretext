@@ -1,5 +1,7 @@
 # pretext
 
+ [ ] install and configure `flameshot`
+
 ## Setup Environment
 
 Install ansible and go.
