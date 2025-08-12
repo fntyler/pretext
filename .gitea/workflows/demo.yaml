@@ -1,4 +1,4 @@
-name: Gitea Actions Demooo
+name: Gitea Actions Demo
 run-name: ${{ gitea.actor }} is testing out Gitea Actions
 on: [push]
 
