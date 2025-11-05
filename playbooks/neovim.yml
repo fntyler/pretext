@@ -22,7 +22,6 @@
           - gettext
           - ninja-build
         state: present
-        update_cache: true
 
     - name: neovim telescope.nvim Install dependencies
       ansible.builtin.get_url:
