@@ -18,7 +18,7 @@ $ cd ~/do/pretext
 $ ansible-playbooks playbooks/base.yml
 $ ansible-playbooks playbooks/xdg.yml
 $ ansible-playbooks playbooks/browser.yml
-$ ansible-playbooks playbooks/neovim.yml
+$ ansible-playbooks playbooks/neovim.yml --ask-become-pass
 $ ansible-playbooks playbooks/repo.yml
 # any other playbooks
 ```
